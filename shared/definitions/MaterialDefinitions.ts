@@ -33,11 +33,13 @@ export class MaterialDefinitions {
    Milk: IMaterialDefinition = { name: () => $t(L.Milk) };
    Pizza: IMaterialDefinition = { name: () => $t(L.Pizza) };
    Bread: IMaterialDefinition = { name: () => $t(L.Bread) };
+   Cake: IMaterialDefinition = { name: () => $t(L.Cake) };
    SiegeRam: IMaterialDefinition = { name: () => $t(L.SiegeRam) };
    Caravel: IMaterialDefinition = { name: () => $t(L.Caravel) };
    Galleon: IMaterialDefinition = { name: () => $t(L.Galleon) };
    Frigate: IMaterialDefinition = { name: () => $t(L.Frigate) };
    Cotton: IMaterialDefinition = { name: () => $t(L.Cotton) };
+   Sugar: IMaterialDefinition = { name: () => $t(L.Sugar) };
    Garment: IMaterialDefinition = { name: () => $t(L.Garment) };
    Furniture: IMaterialDefinition = { name: () => $t(L.Furniture) };
    Opera: IMaterialDefinition = { name: () => $t(L.Opera) };
@@ -48,6 +50,7 @@ export class MaterialDefinitions {
    Newspaper: IMaterialDefinition = { name: () => $t(L.Newspaper) };
    Magazine: IMaterialDefinition = { name: () => $t(L.Magazine) };
    Flour: IMaterialDefinition = { name: () => $t(L.Flour) };
+   ProcessedSugar: IMaterialDefinition = { name: () => $t(L.ProcessedSugar) };
    Book: IMaterialDefinition = { name: () => $t(L.Book) };
    Faith: IMaterialDefinition = { name: () => $t(L.Faith) };
    Coin: IMaterialDefinition = { name: () => $t(L.Coin) };

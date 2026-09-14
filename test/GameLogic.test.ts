@@ -78,6 +78,38 @@ test("getBuildingValue", () => {
    );
 });
 
+test("Sugar Plantation definition", () => {
+   assert.equal(1, Config.Building.SugarPlantation.output.Sugar);
+   assert.equal(true, Config.Tech.Farming.unlockBuilding?.includes("SugarPlantation"));
+});
+
+test("Sugar Mill processes sugar", () => {
+   assert.deepEqual({ Sugar: 1 }, Config.Building.SugarMill.input);
+   assert.deepEqual({ ProcessedSugar: 1 }, Config.Building.SugarMill.output);
+   assert.deepEqual(["LandTrade"], Config.Tech.SugarProcessing.requireTech);
+   assert.equal(true, Config.Tech.SugarProcessing.unlockBuilding?.includes("SugarMill"));
+});
+
+test("Bakery produces bread and cake from processed sugar", () => {
+   assert.deepEqual({ Water: 1, Flour: 1, ProcessedSugar: 1 }, Config.Building.Bakery.input);
+   assert.deepEqual({ Bread: 1, Cake: 1 }, Config.Building.Bakery.output);
+   assert.equal(true, Config.Tech.CityState.requireTech.includes("SugarProcessing"));
+   assert.equal(true, Config.Tech.CityState.unlockBuilding?.includes("Bakery"));
+});
+
+test("Palace of Versailles consumes cake for happiness", () => {
+   assert.deepEqual({ Cake: 10 }, Config.Building.PalaceOfVersailles.input);
+   assert.equal(true, Config.Tech.Autocracy.unlockBuilding?.includes("PalaceOfVersailles"));
+});
+
+test("House requires lumber and brick to build and sugar to operate", () => {
+   assert.deepEqual(
+      { Wood: 1, Stone: 1, Water: 1, Lumber: 1, Brick: 1 },
+      Config.Building.House.construction,
+   );
+   assert.deepEqual({ Wheat: 1, Water: 2, Sugar: 1 }, Config.Building.House.input);
+});
+
 test("TileBitPacking", () => {
    const tile = pointToTile({ x: 13, y: 14 });
    assert.equal(13, (tile >> 16) & 0xffff);

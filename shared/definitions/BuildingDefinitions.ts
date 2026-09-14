@@ -32,15 +32,15 @@ export class BuildingDefinitions {
    // #region Workers ////////////////////////////////////////////////////////////////////////////////////////
    Hut: IBuildingDefinition = {
       name: () => $t(L.Hut),
-      input: {},
+      input: { Water: 1 },
       output: { Worker: 1 },
       construction: { Wood: 1 },
    };
    House: IBuildingDefinition = {
       name: () => $t(L.House),
-      input: { Wheat: 1, Water: 1 },
+      input: { Wheat: 1, Water: 2, Sugar: 1 },
       output: { Worker: 6 },
-      construction: { Wood: 1, Stone: 1, Water: 1 },
+      construction: { Wood: 1, Stone: 1, Water: 1, Lumber: 1, Brick: 1 },
    };
    Apartment: IBuildingDefinition = {
       name: () => $t(L.Apartment),
@@ -555,6 +555,12 @@ export class BuildingDefinitions {
       output: { Cotton: 1 },
       construction: { Wood: 1 },
    };
+   SugarPlantation: IBuildingDefinition = {
+      name: () => $t(L.SugarPlantation),
+      input: {},
+      output: { Sugar: 1 },
+      construction: { Wood: 1 },
+   };
    CottonMill: IBuildingDefinition = {
       name: () => $t(L.CottonMill),
       input: { Cotton: 2 },
@@ -582,6 +588,12 @@ export class BuildingDefinitions {
       output: { Flour: 1 },
       construction: { Brick: 1 },
    };
+   SugarMill: IBuildingDefinition = {
+      name: () => $t(L.SugarMill),
+      input: { Sugar: 1 },
+      output: { ProcessedSugar: 1 },
+      construction: { Brick: 1 },
+   };
    PoultryFarm: IBuildingDefinition = {
       name: () => $t(L.PoultryFarm),
       input: { Wheat: 2 },
@@ -602,8 +614,8 @@ export class BuildingDefinitions {
    };
    Bakery: IBuildingDefinition = {
       name: () => $t(L.Bakery),
-      input: { Water: 1, Flour: 1 },
-      output: { Bread: 1 },
+      input: { Water: 1, Flour: 1, ProcessedSugar: 1 },
+      output: { Bread: 1, Cake: 1 },
       construction: { Brick: 1, Lumber: 1, Stone: 1 },
    };
    CheeseMaker: IBuildingDefinition = {
@@ -1060,6 +1072,16 @@ export class BuildingDefinitions {
       special: BuildingSpecial.WorldWonder,
       construction: { Iron: 100, Bread: 100, Cheese: 100 },
       wikipedia: "Temple_of_Heaven",
+   };
+   PalaceOfVersailles: IBuildingDefinition = {
+      name: () => $t(L.PalaceOfVersailles),
+      desc: () => $t(L.PalaceOfVersaillesDesc),
+      input: { Cake: 10 },
+      output: {},
+      construction: { Marble: 100, Furniture: 100, Cake: 100 },
+      max: 1,
+      special: BuildingSpecial.WorldWonder,
+      wikipedia: "Palace_of_Versailles",
    };
    Parthenon: IBuildingDefinition = {
       name: () => $t(L.Parthenon),

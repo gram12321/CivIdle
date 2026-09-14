@@ -107,7 +107,7 @@ export class TechDefinitions {
    Farming: ITechDefinition = {
       name: () => $t(L.Farming),
       column: 1,
-      unlockBuilding: ["WheatFarm"],
+      unlockBuilding: ["WheatFarm", "SugarPlantation"],
       requireTech: ["Shelter", "Logging"],
    };
 
@@ -235,6 +235,13 @@ export class TechDefinitions {
       unlockBuilding: ["MusiciansGuild", "PaintersGuild"],
    };
 
+   SugarProcessing: ITechDefinition = {
+      name: () => $t(L.SugarProcessing),
+      column: 5,
+      requireTech: ["LandTrade"],
+      unlockBuilding: ["SugarMill"],
+   };
+
    Calendar: ITechDefinition = {
       name: () => $t(L.Calendar),
       column: 5,
@@ -263,7 +270,7 @@ export class TechDefinitions {
    CityState: ITechDefinition = {
       name: () => $t(L.CityState),
       column: 6,
-      requireTech: ["Construction", "Music"],
+      requireTech: ["Construction", "Music", "SugarProcessing"],
       unlockBuilding: ["Bakery", "MausoleumAtHalicarnassus"],
    };
 
@@ -323,7 +330,7 @@ export class TechDefinitions {
       name: () => $t(L.Autocracy),
       column: 8,
       requireTech: ["Politics", "Library", "Theater"],
-      unlockBuilding: ["CoinMint", "TempleOfHeaven"],
+      unlockBuilding: ["CoinMint", "TempleOfHeaven", "PalaceOfVersailles"],
    };
 
    Religion: ITechDefinition = {

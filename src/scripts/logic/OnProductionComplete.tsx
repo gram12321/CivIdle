@@ -413,6 +413,15 @@ export function onProductionComplete({ xy, offline }: { xy: Tile; offline: boole
          });
          break;
       }
+      case "PalaceOfVersailles": {
+         if (!Tick.current.notProducingReasons.has(xy)) {
+            Tick.next.globalMultipliers.happiness.push({
+               value: 2,
+               source: buildingName,
+            });
+         }
+         break;
+      }
       case "AngkorWat": {
          mapSafeAdd(Tick.next.workersAvailable, "Worker", 1000);
          for (const neighbor of grid.getNeighbors(tileToPoint(xy))) {
