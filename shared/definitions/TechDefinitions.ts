@@ -83,10 +83,10 @@ export class TechDefinitions {
       requireTech: [],
    };
 
-   Shelter: ITechDefinition = {
-      name: () => $t(L.Shelter),
+   CaveDwelling: ITechDefinition = {
+      name: () => $t(L.CaveDwelling),
       column: 0,
-      unlockBuilding: ["Hut"],
+      unlockBuilding: ["CaveHabitat"],
       requireTech: [],
    };
 
@@ -108,7 +108,14 @@ export class TechDefinitions {
       name: () => $t(L.Farming),
       column: 1,
       unlockBuilding: ["WheatFarm", "SugarPlantation"],
-      requireTech: ["Shelter", "Logging"],
+      requireTech: ["Logging"],
+   };
+
+   Shelter: ITechDefinition = {
+      name: () => $t(L.Shelter),
+      column: 1,
+      unlockBuilding: ["Hut"],
+      requireTech: ["CaveDwelling"],
    };
 
    Bronze: ITechDefinition = {
@@ -123,7 +130,7 @@ export class TechDefinitions {
       name: () => $t(L.Housing),
       column: 2,
       unlockBuilding: ["House"],
-      requireTech: ["Masonry", "Counting"],
+      requireTech: ["Masonry", "Counting", "Shelter"],
       buildingMultiplier: { Hut: { output: 1 } },
       additionalUpgrades: () => [$t(L.TechProductionPriority)],
    };

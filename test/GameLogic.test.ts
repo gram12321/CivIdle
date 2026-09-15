@@ -83,6 +83,18 @@ test("Sugar Plantation definition", () => {
    assert.equal(true, Config.Tech.Farming.unlockBuilding?.includes("SugarPlantation"));
 });
 
+test("Cave Habitat provides a worker without input", () => {
+   assert.deepEqual({}, Config.Building.CaveHabitat.input);
+   assert.deepEqual({ Worker: 1 }, Config.Building.CaveHabitat.output);
+   assert.deepEqual({ Stone: 1 }, Config.Building.CaveHabitat.construction);
+   assert.equal(0, Config.Tech.CaveDwelling.column);
+   assert.deepEqual([], Config.Tech.CaveDwelling.requireTech);
+   assert.equal(true, Config.Tech.CaveDwelling.unlockBuilding?.includes("CaveHabitat"));
+   assert.equal(1, Config.Tech.Shelter.column);
+   assert.deepEqual(["CaveDwelling"], Config.Tech.Shelter.requireTech);
+   assert.deepEqual(["Logging"], Config.Tech.Farming.requireTech);
+});
+
 test("Sugar Mill processes sugar", () => {
    assert.deepEqual({ Sugar: 1 }, Config.Building.SugarMill.input);
    assert.deepEqual({ ProcessedSugar: 1 }, Config.Building.SugarMill.output);
@@ -379,9 +391,11 @@ test("isPrerequisiteOf", () => {
 
 test("getAllPrerequisites", () => {
    const prerequisites = getAllPrerequisites("Housing");
-   assert.equal(5, prerequisites.size);
+   assert.equal(7, prerequisites.size);
    assert.equal(true, prerequisites.has("Counting"));
    assert.equal(true, prerequisites.has("Masonry"));
+   assert.equal(true, prerequisites.has("Shelter"));
+   assert.equal(true, prerequisites.has("CaveDwelling"));
    assert.equal(true, prerequisites.has("Fire"));
    assert.equal(true, prerequisites.has("StoneTools"));
    assert.equal(true, prerequisites.has("Logging"));

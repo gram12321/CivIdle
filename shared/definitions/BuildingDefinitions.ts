@@ -33,8 +33,14 @@ export class BuildingDefinitions {
    Hut: IBuildingDefinition = {
       name: () => $t(L.Hut),
       input: { Water: 1 },
-      output: { Worker: 1 },
+      output: { Worker: 2 },
       construction: { Wood: 1 },
+   };
+   CaveHabitat: IBuildingDefinition = {
+      name: () => $t(L.CaveHabitat),
+      input: {},
+      output: { Worker: 1 },
+      construction: { Stone: 0.5 },
    };
    House: IBuildingDefinition = {
       name: () => $t(L.House),
