@@ -328,6 +328,8 @@ export enum MigrationFlags {
    ShortcutEditorActionsMigrated = 1 << 2,
    EmptyTileTierShortcutsMigrated = 1 << 3,
    EmptyTileWonderShortcutMigrated = 1 << 4,
+   WorldPageShortcutsMigrated = 1 << 5,
+   WorldPageNumpadShortcutsMigrated = 1 << 6,
 }
 
 export enum RebirthFlags {

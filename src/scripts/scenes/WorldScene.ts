@@ -24,6 +24,7 @@ import {
 } from "../../../shared/logic/GameState";
 import { getGameOptions, getGameState, notifyGameStateUpdate } from "../../../shared/logic/GameStateLogic";
 import { getGrid } from "../../../shared/logic/IntraTickCache";
+import { isShortcutEqual, makeShortcut, OnKeydown, type Shortcut } from "../../../shared/logic/Shortcut";
 import { makeBuilding } from "../../../shared/logic/Tile";
 import { Transports } from "../../../shared/logic/Transports";
 import {
@@ -35,6 +36,7 @@ import {
    tileToPoint,
    type Tile,
 } from "../../../shared/utilities/Helper";
+import type { Disposable } from "../../../shared/utilities/TypedEvent";
 import { ObjectPool } from "../../../shared/utilities/ObjectPool";
 import { lerpVector2, v2 } from "../../../shared/utilities/Vector2";
 import { getTexture } from "../logic/VisualLogic";
@@ -58,6 +60,19 @@ const SELECTOR_ALPHA = 0.4;
 const HIGHLIGHT_ALPHA = 0.2;
 const ANIMATION_TIME = 0.2;
 const TRANSPORT_VISUAL_SIZE = 10;
+const WORLD_DIRECTION_ACTIONS: Array<{ action: Shortcut; direction: IPointData }> = [
+   { action: "WorldPageMoveSelectedTileUpLeft", direction: { x: -1, y: -1 } },
+   { action: "WorldPageMoveSelectedTileUpRight", direction: { x: 1, y: -1 } },
+   { action: "WorldPageMoveSelectedTileLeft", direction: { x: -1, y: 0 } },
+   { action: "WorldPageMoveSelectedTileRight", direction: { x: 1, y: 0 } },
+   { action: "WorldPageMoveSelectedTileDownLeft", direction: { x: -1, y: 1 } },
+   { action: "WorldPageMoveSelectedTileDownRight", direction: { x: 1, y: 1 } },
+];
+const WORLD_PAN_DIRECTION_ACTIONS: Array<{ action: Shortcut; direction: IPointData }> = [
+   ...WORLD_DIRECTION_ACTIONS,
+   { action: "WorldPagePanMapUp", direction: { x: 0, y: -1 } },
+   { action: "WorldPagePanMapDown", direction: { x: 0, y: 1 } },
+];
 
 export class WorldScene extends Scene {
    private _width!: number;
@@ -79,6 +94,15 @@ export class WorldScene extends Scene {
    private readonly _transport: Map<number, Sprite> = new Map();
    private _selectedXy: Tile | null = null;
    private _hijackSelectGridResolve: ((grid: IPointData) => void) | null = null;
+   private _keyboardSubscription: Disposable | null = null;
+   private _cameraPanPressed = false;
+   private _cameraPanCode: string | null = null;
+   private readonly _onKeyup = (e: KeyboardEvent) => {
+      if (e.code === this._cameraPanCode) {
+         this._cameraPanPressed = false;
+         this._cameraPanCode = null;
+      }
+   };
 
    constructor(context: ISceneContext) {
       super(context);
@@ -167,7 +191,118 @@ export class WorldScene extends Scene {
       if (hq) {
          this.selectGrid(tileToPoint(hq.tile));
       }
+      this._keyboardSubscription = OnKeydown.on((e) => {
+         if (
+            e.target instanceof HTMLInputElement ||
+            e.target instanceof HTMLTextAreaElement ||
+            e.target instanceof HTMLSelectElement
+         ) {
+            return;
+         }
+         if (this.isPanShortcut(e)) {
+            this._cameraPanPressed = true;
+            this._cameraPanCode = e.code;
+            e.preventDefault();
+            return;
+         }
+         const direction = this.getWorldDirection(e);
+         const panDirection = this.getWorldPanDirection(e);
+         if (direction || panDirection) {
+            e.preventDefault();
+            if (this._cameraPanPressed && panDirection) {
+               this.panCamera(panDirection);
+            } else if (direction) {
+               this.moveSelectedTile(direction);
+            }
+         }
+      });
+      window.addEventListener("keyup", this._onKeyup);
       super.onEnable();
+   }
+
+   override onDisable(): void {
+      this._keyboardSubscription?.dispose();
+      this._keyboardSubscription = null;
+      window.removeEventListener("keyup", this._onKeyup);
+      this._cameraPanPressed = false;
+      this._cameraPanCode = null;
+      super.onDisable();
+   }
+
+   private isPanShortcut(e: KeyboardEvent): boolean {
+      const shortcut = getGameOptions().shortcuts.WorldPagePanMap;
+      return !!shortcut && isShortcutEqual(shortcut, makeShortcut(e));
+   }
+
+   private getWorldDirection(e: KeyboardEvent): IPointData | null {
+      const shortcut = makeShortcut(e);
+      return (
+         WORLD_DIRECTION_ACTIONS.find(({ action }) => {
+            const config = getGameOptions().shortcuts[action];
+            return !!config && isShortcutEqual(config, shortcut);
+         })?.direction ?? null
+      );
+   }
+
+   private getWorldPanDirection(e: KeyboardEvent): IPointData | null {
+      const shortcut = makeShortcut(e);
+      return (
+         WORLD_PAN_DIRECTION_ACTIONS.find(({ action }) => {
+            const config = getGameOptions().shortcuts[action];
+            return !!config && isShortcutEqual(config, shortcut);
+         })?.direction ?? null
+      );
+   }
+
+   private moveSelectedTile(direction: IPointData): void {
+      if (this._selectedXy === null) {
+         return;
+      }
+      const next = this.getNeighborInDirection(direction, tileToPoint(this._selectedXy));
+      if (next) {
+         this.selectGrid(next.neighbor);
+      }
+   }
+
+   private panCamera(direction: IPointData): void {
+      const grid = getGrid(getGameState());
+      if (direction.x === 0) {
+         const verticalStep = grid.size * 1.5;
+         this.viewport.center = this.viewport.clampCenter({
+            x: this.viewport.center.x,
+            y: this.viewport.center.y + (direction.y < 0 ? -verticalStep : verticalStep),
+         });
+         return;
+      }
+      const current = this._selectedXy ? tileToPoint(this._selectedXy) : grid.positionToGrid(this.viewport.center);
+      const next = this.getNeighborInDirection(direction, current);
+      if (!next) {
+         return;
+      }
+      this.viewport.center = this.viewport.clampCenter({
+         x: this.viewport.center.x + next.delta.x,
+         y: this.viewport.center.y + next.delta.y,
+      });
+   }
+
+   private getNeighborInDirection(direction: IPointData, current: IPointData) {
+      const grid = getGrid(getGameState());
+      const currentPosition = grid.gridToPosition(current);
+      return grid
+         .getNeighbors(current)
+         .map((neighbor) => {
+            const position = grid.gridToPosition(neighbor);
+            const delta = {
+               x: position.x - currentPosition.x,
+               y: position.y - currentPosition.y,
+            };
+            return {
+               neighbor,
+               delta,
+               score: delta.x * direction.x + delta.y * direction.y,
+            };
+         })
+         .sort((a, b) => b.score - a.score)[0];
    }
 
    private restoreViewport(): void {

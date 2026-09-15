@@ -7,6 +7,7 @@ export const ShortcutScopes = {
    ShortcutPage: () => $t(L.ShortcutEdit),
    BuildingPage: () => $t(L.ShortcutScopeBuildingPage),
    TechPage: () => $t(L.ShortcutScopeTechPage),
+   WorldPage: () => $t(L.ShortcutScopeWorldPage),
    EmptyTilePage: () => $t(L.ShortcutScopeEmptyTilePage),
    ConstructionPage: () => $t(L.ShortcutScopeConstructionPage),
    UnexploredPage: () => $t(L.ShortcutScopeUnexploredPage),
@@ -72,6 +73,42 @@ export const ShortcutActions = {
    },
    TechPageGoBackToCity: { scope: "TechPage", name: () => $t(L.ShortcutTechPageGoBackToCity) },
    TechPageUnlockTech: { scope: "TechPage", name: () => $t(L.ShortcutTechPageUnlockTech) },
+   WorldPageMoveSelectedTileUpLeft: {
+      scope: "WorldPage",
+      name: () => $t(L.ShortcutWorldPageMoveSelectedTileUpLeft),
+   },
+   WorldPageMoveSelectedTileUpRight: {
+      scope: "WorldPage",
+      name: () => $t(L.ShortcutWorldPageMoveSelectedTileUpRight),
+   },
+   WorldPageMoveSelectedTileLeft: {
+      scope: "WorldPage",
+      name: () => $t(L.ShortcutWorldPageMoveSelectedTileLeft),
+   },
+   WorldPageMoveSelectedTileRight: {
+      scope: "WorldPage",
+      name: () => $t(L.ShortcutWorldPageMoveSelectedTileRight),
+   },
+   WorldPageMoveSelectedTileDownLeft: {
+      scope: "WorldPage",
+      name: () => $t(L.ShortcutWorldPageMoveSelectedTileDownLeft),
+   },
+   WorldPageMoveSelectedTileDownRight: {
+      scope: "WorldPage",
+      name: () => $t(L.ShortcutWorldPageMoveSelectedTileDownRight),
+   },
+   WorldPagePanMapUp: {
+      scope: "WorldPage",
+      name: () => $t(L.ShortcutWorldPagePanMapUp),
+   },
+   WorldPagePanMapDown: {
+      scope: "WorldPage",
+      name: () => $t(L.ShortcutWorldPagePanMapDown),
+   },
+   WorldPagePanMap: {
+      scope: "WorldPage",
+      name: () => $t(L.ShortcutWorldPagePanMap),
+   },
    EmptyTilePageBuildLastBuilding: {
       scope: "EmptyTilePage",
       name: () => $t(L.EmptyTilePageBuildLastBuilding),
@@ -179,7 +216,10 @@ export function getShortcutKey(s: IShortcutConfig): string {
       keys.push("Command");
    }
 
-   if (s.key === " ") {
+   const numpadKey = /^Numpad([0-9])$/.exec(s.key);
+   if (numpadKey) {
+      keys.push(`Numpad ${numpadKey[1]}`);
+   } else if (s.key === " ") {
       keys.push("Space");
    } else {
       keys.push(s.key);
@@ -204,6 +244,6 @@ export function makeShortcut(e: KeyboardEvent): IShortcutConfig {
       shift: e.shiftKey,
       alt: e.altKey,
       meta: e.metaKey,
-      key: e.key,
+      key: e.code.startsWith("Numpad") ? e.code : e.key,
    };
 }
