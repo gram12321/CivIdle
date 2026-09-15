@@ -116,6 +116,7 @@ export class TechDefinitions {
       column: 1,
       unlockBuilding: ["Hut"],
       requireTech: ["CaveDwelling"],
+      additionalUpgrades: () => [$t(L.TechProductionPriority)],
    };
 
    Bronze: ITechDefinition = {
@@ -132,7 +133,6 @@ export class TechDefinitions {
       unlockBuilding: ["House"],
       requireTech: ["Masonry", "Counting", "Shelter"],
       buildingMultiplier: { Hut: { output: 1 } },
-      additionalUpgrades: () => [$t(L.TechProductionPriority)],
    };
 
    Herding: ITechDefinition = {

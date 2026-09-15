@@ -559,7 +559,7 @@ export class BuildingDefinitions {
       name: () => $t(L.CottonPlantation),
       input: {},
       output: { Cotton: 1 },
-      construction: { Wood: 1 },
+      construction: { Wood: 1.5 },
    };
    SugarPlantation: IBuildingDefinition = {
       name: () => $t(L.SugarPlantation),
@@ -592,7 +592,7 @@ export class BuildingDefinitions {
       name: () => $t(L.FlourMill),
       input: { Wheat: 2 },
       output: { Flour: 1 },
-      construction: { Brick: 1 },
+      construction: { Brick: 1, Lumber: 1 },
    };
    SugarMill: IBuildingDefinition = {
       name: () => $t(L.SugarMill),
@@ -602,21 +602,21 @@ export class BuildingDefinitions {
    };
    PoultryFarm: IBuildingDefinition = {
       name: () => $t(L.PoultryFarm),
-      input: { Wheat: 2 },
+      input: { Wheat: 2, Water: 0.1 },
       output: { Meat: 2 },
-      construction: { Lumber: 1 },
+      construction: { Brick: 0.25, Lumber: 0.75 },
    };
    DairyFarm: IBuildingDefinition = {
       name: () => $t(L.DairyFarm),
-      input: { Wheat: 2 },
+      input: { Wheat: 2, Water: 0.2 },
       output: { Milk: 2 },
-      construction: { Brick: 1 },
+      construction: { Brick: 0.75, Lumber: 0.25 },
    };
    Stable: IBuildingDefinition = {
       name: () => $t(L.Stable),
       input: { Wheat: 2 },
       output: { Horse: 1 },
-      construction: { Lumber: 1 },
+      construction: { Lumber: 0.5, Stone: 0.5 },
    };
    Bakery: IBuildingDefinition = {
       name: () => $t(L.Bakery),
@@ -634,7 +634,7 @@ export class BuildingDefinitions {
       name: () => $t(L.Brewery),
       input: { Wheat: 1, Water: 1 },
       output: { Alcohol: 1 },
-      construction: { Copper: 1 },
+      construction: { Copper: 1, Brick: 1 },
    };
    PaperMaker: IBuildingDefinition = {
       name: () => $t(L.PaperMaker),
