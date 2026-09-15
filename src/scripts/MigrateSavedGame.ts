@@ -234,6 +234,21 @@ export function migrateSavedGame(save: SavedGame) {
       save.options.migrationFlags = setFlag(save.options.migrationFlags, MigrationFlags.DefaultShortcutsMigrated);
    }
 
+   if (!hasFlag(save.options.migrationFlags, MigrationFlags.ShortcutEditorActionsMigrated)) {
+      save.options.shortcuts = { ...DEFAULT_SHORTCUTS, ...save.options.shortcuts };
+      save.options.migrationFlags = setFlag(save.options.migrationFlags, MigrationFlags.ShortcutEditorActionsMigrated);
+   }
+
+   if (!hasFlag(save.options.migrationFlags, MigrationFlags.EmptyTileTierShortcutsMigrated)) {
+      save.options.shortcuts = { ...DEFAULT_SHORTCUTS, ...save.options.shortcuts };
+      save.options.migrationFlags = setFlag(save.options.migrationFlags, MigrationFlags.EmptyTileTierShortcutsMigrated);
+   }
+
+   if (!hasFlag(save.options.migrationFlags, MigrationFlags.EmptyTileWonderShortcutMigrated)) {
+      save.options.shortcuts = { ...DEFAULT_SHORTCUTS, ...save.options.shortcuts };
+      save.options.migrationFlags = setFlag(save.options.migrationFlags, MigrationFlags.EmptyTileWonderShortcutMigrated);
+   }
+
    if (isNullOrUndefined(save.options.rankUpFlags)) {
       save.options.rankUpFlags = RankUpFlags.Unset;
    }

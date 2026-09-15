@@ -325,6 +325,9 @@ export enum MigrationFlags {
    None = 0,
    ZenobiaMigrated = 1 << 0,
    DefaultShortcutsMigrated = 1 << 1,
+   ShortcutEditorActionsMigrated = 1 << 2,
+   EmptyTileTierShortcutsMigrated = 1 << 3,
+   EmptyTileWonderShortcutMigrated = 1 << 4,
 }
 
 export enum RebirthFlags {

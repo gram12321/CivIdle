@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { notifyGameOptionsUpdate } from "../../../shared/logic/GameStateLogic";
 import type { IShortcutConfig, Shortcut } from "../../../shared/logic/Shortcut";
 import {
@@ -16,8 +16,56 @@ import { hideModal, showToast } from "./GlobalModal";
 export function EditShortcutModal({ action }: { action: Shortcut }): React.ReactNode {
    const options = useGameOptions();
    const [key, setKey] = useState<IShortcutConfig | undefined>(options.shortcuts[action]);
+   const shortcut = ShortcutActions[action];
+   const saveShortcutConfig = options.shortcuts.ShortcutPageSave;
+   const clearShortcutConfig = options.shortcuts.ShortcutPageClear;
+
+   const clearShortcut = useCallback(() => {
+      delete options.shortcuts[action];
+      notifyGameOptionsUpdate(options);
+      hideModal();
+   }, [action, options]);
+
+   const saveShortcut = useCallback(() => {
+      try {
+         if (key) {
+            forEach(options.shortcuts, (a, value) => {
+               if (!ShortcutActions[a]) {
+                  delete options.shortcuts[a];
+                  return;
+               }
+               if (
+                  ShortcutActions[a].scope === shortcut.scope &&
+                  isShortcutEqual(value, key) &&
+                  a !== action
+               ) {
+                  throw new Error($t(L.ShortcutConflict, { name: ShortcutActions[a].name() }));
+               }
+            });
+            options.shortcuts[action] = key;
+            notifyGameOptionsUpdate(options);
+            hideModal();
+         }
+      } catch (error) {
+         playError();
+         console.error(error);
+         showToast(String(error));
+      }
+   }, [action, key, options, shortcut.scope]);
+
    useEffect(() => {
       document.onkeydown = (e) => {
+         const pressedShortcut = makeShortcut(e);
+         if (saveShortcutConfig && isShortcutEqual(saveShortcutConfig, pressedShortcut)) {
+            e.preventDefault();
+            saveShortcut();
+            return;
+         }
+         if (clearShortcutConfig && isShortcutEqual(clearShortcutConfig, pressedShortcut)) {
+            e.preventDefault();
+            clearShortcut();
+            return;
+         }
          e.preventDefault();
          if (
             (e.ctrlKey && e.key === "Control") ||
@@ -32,8 +80,7 @@ export function EditShortcutModal({ action }: { action: Shortcut }): React.React
       return () => {
          document.onkeydown = null;
       };
-   }, []);
-   const shortcut = ShortcutActions[action];
+   }, [clearShortcut, clearShortcutConfig, saveShortcut, saveShortcutConfig]);
    return (
       <div className="window">
          <div className="title-bar">
@@ -52,45 +99,9 @@ export function EditShortcutModal({ action }: { action: Shortcut }): React.React
                </div>
             </fieldset>
             <div className="row" style={{ justifyContent: "flex-end" }}>
-               <button
-                  onClick={() => {
-                     delete options.shortcuts[action];
-                     notifyGameOptionsUpdate(options);
-                     hideModal();
-                  }}
-               >
-                  {$t(L.ShortcutClear)}
-               </button>
+               <button onClick={clearShortcut}>{$t(L.ShortcutClear)}</button>
                <div style={{ width: "10px" }}></div>
-               <button
-                  disabled={!key}
-                  onClick={() => {
-                     try {
-                        if (key) {
-                           forEach(options.shortcuts, (a, value) => {
-                              if (!ShortcutActions[a]) {
-                                 delete options.shortcuts[a];
-                                 return;
-                              }
-                              if (
-                                 ShortcutActions[a].scope === shortcut.scope &&
-                                 isShortcutEqual(value, key) &&
-                                 a !== action
-                              ) {
-                                 throw new Error($t(L.ShortcutConflict, { name: ShortcutActions[a].name() }));
-                              }
-                           });
-                           options.shortcuts[action] = key;
-                           notifyGameOptionsUpdate(options);
-                           hideModal();
-                        }
-                     } catch (error) {
-                        playError();
-                        console.error(error);
-                        showToast(String(error));
-                     }
-                  }}
-               >
+               <button disabled={!key} onClick={saveShortcut}>
                   {$t(L.ShortcutSave)}
                </button>
             </div>
