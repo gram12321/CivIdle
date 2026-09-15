@@ -5,6 +5,7 @@ import { MigrationFlags, RankUpFlags, ThemeColorNames, type SavedGame } from "..
 import { getGrid } from "../../shared/logic/IntraTickCache";
 import { getTotalGreatPeopleUpgradeCost } from "../../shared/logic/RebirthLogic";
 import { ShortcutActions } from "../../shared/logic/Shortcut";
+import { DEFAULT_SHORTCUTS } from "../../shared/logic/ShortcutDefaults";
 import { BuildingInputMode, ResourceImportOptions, makeBuilding } from "../../shared/logic/Tile";
 import {
    forEach,
@@ -226,6 +227,11 @@ export function migrateSavedGame(save: SavedGame) {
             save.options.greatPeople.Zenobia = { amount: result, level: 0 };
          }
       }
+   }
+
+   if (!hasFlag(save.options.migrationFlags, MigrationFlags.DefaultShortcutsMigrated)) {
+      save.options.shortcuts = { ...DEFAULT_SHORTCUTS, ...save.options.shortcuts };
+      save.options.migrationFlags = setFlag(save.options.migrationFlags, MigrationFlags.DefaultShortcutsMigrated);
    }
 
    if (isNullOrUndefined(save.options.rankUpFlags)) {
