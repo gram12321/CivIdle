@@ -25,6 +25,10 @@ export const ShortcutActions = {
       scope: "ShortcutPage",
       name: () => $t(L.ShortcutClear),
    },
+   ShortcutPageAssign: {
+      scope: "ShortcutPage",
+      name: () => $t(L.ShortcutAssign),
+   },
    BuildingPageSellBuilding: {
       scope: "BuildingPage",
       name: () => $t(L.ShortcutBuildingPageSellBuildingV2),

@@ -15,6 +15,7 @@ function shortcut(key: string, modifiers: Partial<Omit<IShortcutConfig, "key">> 
 export const DEFAULT_SHORTCUTS: Record<Shortcut, IShortcutConfig> = {
    ShortcutPageSave: shortcut("s"),
    ShortcutPageClear: shortcut("c"),
+   ShortcutPageAssign: shortcut("a"),
    BuildingPageSellBuilding: shortcut("Delete"),
    BuildingPageUpgrade1: shortcut("1"),
    BuildingPageUpgrade2: shortcut("2"),

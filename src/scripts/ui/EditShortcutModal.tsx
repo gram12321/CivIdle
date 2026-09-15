@@ -16,9 +16,11 @@ import { hideModal, showToast } from "./GlobalModal";
 export function EditShortcutModal({ action }: { action: Shortcut }): React.ReactNode {
    const options = useGameOptions();
    const [key, setKey] = useState<IShortcutConfig | undefined>(options.shortcuts[action]);
+   const [isAssigning, setIsAssigning] = useState(false);
    const shortcut = ShortcutActions[action];
    const saveShortcutConfig = options.shortcuts.ShortcutPageSave;
    const clearShortcutConfig = options.shortcuts.ShortcutPageClear;
+   const assignShortcutConfig = options.shortcuts.ShortcutPageAssign;
 
    const clearShortcut = useCallback(() => {
       delete options.shortcuts[action];
@@ -55,7 +57,26 @@ export function EditShortcutModal({ action }: { action: Shortcut }): React.React
 
    useEffect(() => {
       document.onkeydown = (e) => {
+         if (isAssigning) {
+            e.preventDefault();
+            if (
+               (e.ctrlKey && e.key === "Control") ||
+               (e.shiftKey && e.key === "Shift") ||
+               (e.altKey && e.key === "Alt") ||
+               (e.metaKey && e.key === "Meta")
+            ) {
+               return;
+            }
+            setKey(makeShortcut(e));
+            setIsAssigning(false);
+            return;
+         }
          const pressedShortcut = makeShortcut(e);
+         if (assignShortcutConfig && isShortcutEqual(assignShortcutConfig, pressedShortcut)) {
+            e.preventDefault();
+            setIsAssigning(true);
+            return;
+         }
          if (saveShortcutConfig && isShortcutEqual(saveShortcutConfig, pressedShortcut)) {
             e.preventDefault();
             saveShortcut();
@@ -66,21 +87,11 @@ export function EditShortcutModal({ action }: { action: Shortcut }): React.React
             clearShortcut();
             return;
          }
-         e.preventDefault();
-         if (
-            (e.ctrlKey && e.key === "Control") ||
-            (e.shiftKey && e.key === "Shift") ||
-            (e.altKey && e.key === "Alt") ||
-            (e.metaKey && e.key === "Meta")
-         ) {
-            return;
-         }
-         setKey(makeShortcut(e));
       };
       return () => {
          document.onkeydown = null;
       };
-   }, [clearShortcut, clearShortcutConfig, saveShortcut, saveShortcutConfig]);
+   }, [assignShortcutConfig, clearShortcut, clearShortcutConfig, isAssigning, saveShortcut, saveShortcutConfig]);
    return (
       <div className="window">
          <div className="title-bar">
@@ -94,14 +105,19 @@ export function EditShortcutModal({ action }: { action: Shortcut }): React.React
                <div className="row">
                   <div className="m-icon">keyboard</div>
                   <div className="f1 text-center text-strong">
-                     <code>{key ? getShortcutKey(key) : $t(L.ShortcutPressShortcut)}</code>
+                     <code>{isAssigning ? $t(L.ShortcutPressShortcut) : key ? getShortcutKey(key) : $t(L.ShortcutNone)}</code>
                   </div>
                </div>
             </fieldset>
             <div className="row" style={{ justifyContent: "flex-end" }}>
-               <button onClick={clearShortcut}>{$t(L.ShortcutClear)}</button>
+               <button onClick={() => setIsAssigning(true)} disabled={isAssigning}>
+                  {$t(L.ShortcutAssign)}
+               </button>
+               <button onClick={clearShortcut} disabled={isAssigning}>
+                  {$t(L.ShortcutClear)}
+               </button>
                <div style={{ width: "10px" }}></div>
-               <button disabled={!key} onClick={saveShortcut}>
+               <button disabled={!key || isAssigning} onClick={saveShortcut}>
                   {$t(L.ShortcutSave)}
                </button>
             </div>

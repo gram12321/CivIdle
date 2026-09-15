@@ -1611,6 +1611,7 @@ export const EN = {
    ShortcutBuildingPageUpgrade3: "Upgrade Button 3 (+10)",
    ShortcutBuildingPageUpgrade4: "Upgrade Button 4 (+15)",
    ShortcutBuildingPageUpgrade5: "Upgrade Button 5 (+20)",
+   ShortcutAssign: "Assign",
    ShortcutClear: "Clear",
    ShortcutConflict: "Your shortcut is in conflict with %{name}",
    ShortcutEdit: "Edit Shortcuts",

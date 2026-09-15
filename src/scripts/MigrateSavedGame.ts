@@ -5,7 +5,6 @@ import { MigrationFlags, RankUpFlags, ThemeColorNames, type SavedGame } from "..
 import { getGrid } from "../../shared/logic/IntraTickCache";
 import { getTotalGreatPeopleUpgradeCost } from "../../shared/logic/RebirthLogic";
 import { ShortcutActions } from "../../shared/logic/Shortcut";
-import { DEFAULT_SHORTCUTS } from "../../shared/logic/ShortcutDefaults";
 import { BuildingInputMode, ResourceImportOptions, makeBuilding } from "../../shared/logic/Tile";
 import {
    forEach,
@@ -17,18 +16,6 @@ import {
    tileToPoint,
 } from "../../shared/utilities/Helper";
 import { getConstructionPriority, getProductionPriority } from "./Global";
-
-const LEGACY_WORLD_SHORTCUT_KEYS = {
-   WorldPageMoveSelectedTileUpLeft: "7",
-   WorldPageMoveSelectedTileUpRight: "9",
-   WorldPageMoveSelectedTileLeft: "4",
-   WorldPageMoveSelectedTileRight: "6",
-   WorldPageMoveSelectedTileDownLeft: "1",
-   WorldPageMoveSelectedTileDownRight: "3",
-   WorldPagePanMapUp: "8",
-   WorldPagePanMapDown: "2",
-   WorldPagePanMap: "5",
-} as const;
 
 export function migrateSavedGame(save: SavedGame) {
    // This has to be before `getGrid` is called because getGrid requires extraTileSize to work correctly!
@@ -239,52 +226,6 @@ export function migrateSavedGame(save: SavedGame) {
             save.options.greatPeople.Zenobia = { amount: result, level: 0 };
          }
       }
-   }
-
-   if (!hasFlag(save.options.migrationFlags, MigrationFlags.DefaultShortcutsMigrated)) {
-      save.options.shortcuts = { ...DEFAULT_SHORTCUTS, ...save.options.shortcuts };
-      save.options.migrationFlags = setFlag(save.options.migrationFlags, MigrationFlags.DefaultShortcutsMigrated);
-   }
-
-   if (!hasFlag(save.options.migrationFlags, MigrationFlags.ShortcutEditorActionsMigrated)) {
-      save.options.shortcuts = { ...DEFAULT_SHORTCUTS, ...save.options.shortcuts };
-      save.options.migrationFlags = setFlag(save.options.migrationFlags, MigrationFlags.ShortcutEditorActionsMigrated);
-   }
-
-   if (!hasFlag(save.options.migrationFlags, MigrationFlags.EmptyTileTierShortcutsMigrated)) {
-      save.options.shortcuts = { ...DEFAULT_SHORTCUTS, ...save.options.shortcuts };
-      save.options.migrationFlags = setFlag(save.options.migrationFlags, MigrationFlags.EmptyTileTierShortcutsMigrated);
-   }
-
-   if (!hasFlag(save.options.migrationFlags, MigrationFlags.EmptyTileWonderShortcutMigrated)) {
-      save.options.shortcuts = { ...DEFAULT_SHORTCUTS, ...save.options.shortcuts };
-      save.options.migrationFlags = setFlag(save.options.migrationFlags, MigrationFlags.EmptyTileWonderShortcutMigrated);
-   }
-
-   if (!hasFlag(save.options.migrationFlags, MigrationFlags.WorldPageShortcutsMigrated)) {
-      save.options.shortcuts = { ...DEFAULT_SHORTCUTS, ...save.options.shortcuts };
-      save.options.migrationFlags = setFlag(save.options.migrationFlags, MigrationFlags.WorldPageShortcutsMigrated);
-   }
-
-   if (!hasFlag(save.options.migrationFlags, MigrationFlags.WorldPageNumpadShortcutsMigrated)) {
-      save.options.shortcuts = { ...DEFAULT_SHORTCUTS, ...save.options.shortcuts };
-      for (const [action, legacyKey] of Object.entries(LEGACY_WORLD_SHORTCUT_KEYS)) {
-         const current = save.options.shortcuts[action as keyof typeof DEFAULT_SHORTCUTS];
-         if (
-            current?.key === legacyKey &&
-            !current.ctrl &&
-            !current.alt &&
-            !current.shift &&
-            !current.meta
-         ) {
-            save.options.shortcuts[action as keyof typeof DEFAULT_SHORTCUTS] =
-               DEFAULT_SHORTCUTS[action as keyof typeof DEFAULT_SHORTCUTS];
-         }
-      }
-      save.options.migrationFlags = setFlag(
-         save.options.migrationFlags,
-         MigrationFlags.WorldPageNumpadShortcutsMigrated,
-      );
    }
 
    if (isNullOrUndefined(save.options.rankUpFlags)) {
